@@ -13,10 +13,11 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'rest_framework',
+    'rest_framework_swagger',
 )
 
 LOCAL_APPS = (
-
+    'apps.account',
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
