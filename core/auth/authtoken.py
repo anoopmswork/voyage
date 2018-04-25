@@ -1,19 +1,19 @@
 import json
 
-from braces.views import CsrfExemptMixin
 from django.conf import settings
 from django.http import HttpResponse
-from eventcalendar.models import CredentialsModel, \
-    EventGoogleCalendar
-from oauth2_provider.settings import oauth2_settings
-from oauth2_provider.views.mixins import OAuthLibMixin
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rocketchat.utils import get_rocket_chat_token, logout_rocket_chat, check_rocket_token
 
+from braces.views import CsrfExemptMixin
+from eventcalendar.models import CredentialsModel, \
+    EventGoogleCalendar
+from oauth2_provider.settings import oauth2_settings
+from oauth2_provider.views.mixins import OAuthLibMixin
+from rocketchat.utils import get_rocket_chat_token, logout_rocket_chat, check_rocket_token
 from apps.account import ContactRefSerializer, SignUpSerializer, ResetPasswordSerializer
 from apps.account import User, Invitations
 from core import errors as err

@@ -19,6 +19,8 @@ from .installed_apps import *
 
 from .database import *
 
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -72,6 +74,12 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'voyage.wsgi.application'
+
+AUTHENTICATION_BACKENDS = ['apps.account.backend.EmailBackend']
+
+
+
+
 
 
 
