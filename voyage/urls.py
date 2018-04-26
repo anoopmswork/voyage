@@ -28,7 +28,7 @@ for app in settings.LOCAL_APPS:
         continue
     localapp_urlpatterns.append(url(r'^', include('%s.urls' % app)))
 
-urlpatterns = [
+urlpatterns = localapp_urlpatterns + [
     url(r'^apidoc/', schema_view),
     url(r'^admin/', admin.site.urls),
     url('grappelli/', include('grappelli.urls')),
