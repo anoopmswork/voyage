@@ -18,8 +18,7 @@ def is_adult(birthday):
         d2 = datetime.datetime.strptime(now, "%d-%m-%Y")
         d1 = datetime.datetime.strptime(birthday, "%d-%m-%Y")
         current_age = (d2 - d1).days / 365
-        if current_age < 18:
-            raise err.ValidationError(*("You are minor", 400))
+        return False if current_age < 18 else True
     except Exception as e:
         logger.error(e)
         raise err.ValidationError(*(e, 400))

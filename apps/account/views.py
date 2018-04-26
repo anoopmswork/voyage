@@ -35,7 +35,8 @@ class AccountViewSet(ExModelViewSet):
         try:
             if not request.data.get('birthday',None):
                 raise err.ValidationError(*("Birthday is not given", 400))
-            is_adult(request.data.get('birthday'))
+            if not is_adult(request.data.get('birthday')):
+                raise err.ValidationError(*("You are not an adult", 400))
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
