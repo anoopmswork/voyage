@@ -6,6 +6,7 @@ from core import errors as err
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+
 def is_adult(birthday):
     """
     To find whether an individual is adult using birthday date
@@ -14,8 +15,11 @@ def is_adult(birthday):
     """
     try:
         now = datetime.datetime.now().strftime("%d-%m-%Y")
-        current_age=now-birthday
-        print(current_age)
+        d2 = datetime.datetime.strptime(now, "%d-%m-%Y")
+        d1 = datetime.datetime.strptime(birthday, "%d-%m-%Y")
+        current_age = (d2 - d1).days / 365
+        if current_age < 18:
+            raise err.ValidationError(*("You are minor", 400))
     except Exception as e:
         logger.error(e)
         raise err.ValidationError(*(e, 400))
