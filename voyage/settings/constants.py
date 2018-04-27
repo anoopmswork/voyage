@@ -74,3 +74,9 @@ JWT_AUTH = {
     'JWT_AUTH_COOKIE': None,
 
 }
+
+AVAILABLE_CHOICES = (
+    ('active', 'Active'),
+    ('inactive', 'InActive'),
+    ('archived', 'Archived'),
+)

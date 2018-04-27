@@ -25,7 +25,22 @@ class AccountViewSet(ExModelViewSet):
     serializer_class = UserSerializer
     retrieve_serializer_class = UserSerializer
 
-    @action(methods=['POST'],detail=False)
+    def verify_birthday(self, birthday=None):
+        """
+        Verify birthday to find whether adult or not
+        :param birthday:
+        :return:
+        """
+        try:
+            if not birthday:
+                raise err.ValidationError(*("Birthday is not given", 400))
+            if not is_adult(birthday):
+                raise err.ValidationError(*("You are not an adult", 400))
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['POST'], detail=False)
     def signup(self, request):
         """
         To signup a new user in the system
@@ -33,10 +48,8 @@ class AccountViewSet(ExModelViewSet):
         :return:
         """
         try:
-            if not request.data.get('birthday',None):
-                raise err.ValidationError(*("Birthday is not given", 400))
-            if not is_adult(request.data.get('birthday')):
-                raise err.ValidationError(*("You are not an adult", 400))
+            self.verify_birthday(request.data.get('birthday', None))
+            print("test")
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
