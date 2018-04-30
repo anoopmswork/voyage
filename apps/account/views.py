@@ -1,5 +1,5 @@
 import logging
-
+import string
 from core.viewsets import ExModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes, action
@@ -40,6 +40,18 @@ class AccountViewSet(ExModelViewSet):
             logger.error(e)
             raise err.ValidationError(*(e, 400))
 
+    def verify_password(self, **params):
+        try:
+            if len(params['password']) < 9:
+                raise err.ValidationError(*("At least 8 characters", 400))
+            invalid_chars = set(string.punctuation.replace("_", ""))
+            if not any(char.isdigit() for char in params['password']) \
+                    and not any(char in invalid_chars for char in params['password']):
+                raise err.ValidationError(*("Must contains a number or symbol", 400))
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
     @action(methods=['POST'], detail=False)
     def signup(self, request):
         """
@@ -49,6 +61,17 @@ class AccountViewSet(ExModelViewSet):
         """
         try:
             self.verify_birthday(request.data.get('birthday', None))
+            first_name = request.data.get('first_name', None)
+            last_name = request.data.get('last_name', None)
+            email = request.data.get('email', None)
+            password = request.data.get('password', None)
+            params = {
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'password': password
+            }
+            self.verify_password(**params)
             print("test")
         except Exception as e:
             logger.error(e)
