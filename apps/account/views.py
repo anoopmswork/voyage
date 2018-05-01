@@ -42,12 +42,18 @@ class AccountViewSet(ExModelViewSet):
 
     def verify_password(self, **params):
         try:
+            if not params['first_name'] or not params['last_name']:
+                raise err.ValidationError(*("First name and last name cant be empty", 400))
             if len(params['password']) < 9:
                 raise err.ValidationError(*("At least 8 characters", 400))
             invalid_chars = set(string.punctuation.replace("_", ""))
             if not any(char.isdigit() for char in params['password']) \
                     and not any(char in invalid_chars for char in params['password']):
                 raise err.ValidationError(*("Must contains a number or symbol", 400))
+            if params['first_name'] in params['password'] \
+                    or params['last_name'] in params['password'] or \
+                            params['email'] in params['password']:
+                raise err.ValidationError(*("Password cannot contain your name or email address", 400))
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
@@ -65,14 +71,19 @@ class AccountViewSet(ExModelViewSet):
             last_name = request.data.get('last_name', None)
             email = request.data.get('email', None)
             password = request.data.get('password', None)
+            username = request.data.get('username', None)
             params = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'email': email,
-                'password': password
+                'password': password,
+                'username':username
             }
             self.verify_password(**params)
-            print("test")
+            serializer = UserSerializer(data=params)
+            if serializer.is_valid(raise_exception=True):
+                user = serializer.save()
+            return Response("User successfully registered")
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
