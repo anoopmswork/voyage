@@ -9,14 +9,14 @@ class UserProfile(ExModel):
     """
     Model class for user profile details
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     receive_notifications = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s" % self.user.name
 
+
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
-    instance.profile.save()

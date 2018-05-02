@@ -11,6 +11,7 @@ from rest_framework import status, viewsets
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
 from .utils import is_adult
+from django.contrib.auth.hashers import make_password
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -76,14 +77,44 @@ class AccountViewSet(ExModelViewSet):
                 'first_name': first_name,
                 'last_name': last_name,
                 'email': email,
-                'password': password,
-                'username':username
+                'password': make_password(password),
+                'username': username
             }
             self.verify_password(**params)
             serializer = UserSerializer(data=params)
             if serializer.is_valid(raise_exception=True):
                 user = serializer.save()
-            return Response("User successfully registered")
+            return Response({"success": True,
+                             "msg": "User successfully registered"})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['POST'], detail=False)
+    def login(self, request):
+        """
+        To authenticate a user login
+        :param request:
+        :return:
+        """
+        try:
+            username = request.data.get('email', None)
+            password = request.data.get('password', None)
+            if username is None or password is None:
+                raise err.ValidationError(*("Email or password is not given", 400))
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                payload = jwt_payload_handler(user)
+                token = jwt_encode_handler(payload)
+                return Response({
+                    "token": token,
+                    "status": "success",
+                })
+            else:
+                return Response({
+                    "status": "failure",
+                    "msg": "Invalid parameters"
+                })
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
