@@ -77,6 +77,8 @@ WSGI_APPLICATION = 'voyage.wsgi.application'
 
 AUTHENTICATION_BACKENDS = ['apps.account.backend.EmailBackend']
 
+EMAIL_BACKEND = 'post_office.EmailBackend'
+
 
 
 

@@ -15,6 +15,7 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework_swagger',
     'django_extensions',
+    'post_office',
 )
 
 LOCAL_APPS = (

@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from .serializers import UserSerializer
 from .utils import is_adult
 from django.contrib.auth.hashers import make_password
+from post_office import mail
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -115,6 +116,19 @@ class AccountViewSet(ExModelViewSet):
                     "status": "failure",
                     "msg": "Invalid parameters"
                 })
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['POST'], detail=False)
+    def forget_password(self, request):
+        """
+        To reset password for forget password functionality
+        :param request:
+        :return:
+        """
+        try:
+            email = request.data.get('email', None)
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))

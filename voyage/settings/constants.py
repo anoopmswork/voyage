@@ -80,3 +80,5 @@ AVAILABLE_CHOICES = (
     ('inactive', 'InActive'),
     ('archived', 'Archived'),
 )
+
+
