@@ -1,5 +1,6 @@
 import logging
 import string
+import random
 from core.viewsets import ExModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes, action
@@ -129,6 +130,9 @@ class AccountViewSet(ExModelViewSet):
         """
         try:
             email = request.data.get('email', None)
+            if not email:
+                raise err.ValidationError(*("Email  is not given", 400))
+            user=User.objects.filter(email=email).first()
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))

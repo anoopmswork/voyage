@@ -1,8 +1,6 @@
 from django.contrib.auth.models import User
 from core.models import ExModel
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class UserProfile(ExModel):
@@ -16,7 +14,14 @@ class UserProfile(ExModel):
         return "%s" % self.user.name
 
 
-@receiver(post_save, sender=User)
-def create_or_update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
+class ResetPassword(ExModel):
+    """
+    Model class for forget password storing details
+    """
+    email = models.EmailField(null=False, blank=False)
+    user = models.ForeignKey(User, related_name='reset_password', on_delete=models.CASCADE)
+    expired = models.BooleanField(default=False)
+    token = models.CharField(null=False, blank=False,max_length=100)
+
+    def __str__(self):
+        return "%s" % self.user.name
