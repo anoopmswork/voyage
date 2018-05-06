@@ -1,7 +1,7 @@
 import logging
 import string
 import random
-import base64
+
 from core.viewsets import ExModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes, action
@@ -153,6 +153,7 @@ class AccountViewSet(ExModelViewSet):
                 'anoopmsfreelancer@gmail.com',
                 template='forget_password',  # Could be an EmailTemplate instance or name
                 context={'user': user.first_name, 'link': link},
+                priority='now',
             )
             return Response({"success": True,
                              "msg": "Reset password link is "
