@@ -79,6 +79,9 @@ AUTHENTICATION_BACKENDS = ['apps.account.backend.EmailBackend']
 
 EMAIL_BACKEND = 'post_office.EmailBackend'
 
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+
 
 
 

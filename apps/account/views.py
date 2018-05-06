@@ -1,6 +1,7 @@
 import logging
 import string
 import random
+import base64
 from core.viewsets import ExModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes, action
@@ -14,6 +15,7 @@ from .serializers import UserSerializer
 from .utils import is_adult
 from django.contrib.auth.hashers import make_password
 from post_office import mail
+from .models import ResetPassword
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -27,6 +29,14 @@ class AccountViewSet(ExModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     retrieve_serializer_class = UserSerializer
+
+    def random_word(self, length):
+        try:
+            letters = string.ascii_lowercase
+            return ''.join(random.choice(letters) for i in range(length))
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
 
     def verify_birthday(self, birthday=None):
         """
@@ -132,7 +142,21 @@ class AccountViewSet(ExModelViewSet):
             email = request.data.get('email', None)
             if not email:
                 raise err.ValidationError(*("Email  is not given", 400))
-            user=User.objects.filter(email=email).first()
+            user = User.objects.filter(email=email).first()
+            if not user:
+                raise err.ValidationError(*("User does not exist for this given email", 400))
+            token = self.random_word(8)
+            ResetPassword.objects.create(email=email, user=user, token=token)
+            link = request.get_host() + "/reset_password?code=" + token
+            mail.send(
+                email,  # List of email addresses also accepted
+                'anoopmsfreelancer@gmail.com',
+                template='forget_password',  # Could be an EmailTemplate instance or name
+                context={'user': user.first_name, 'link': link},
+            )
+            return Response({"success": True,
+                             "msg": "Reset password link is "
+                                    "successfully send to your email"})
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
