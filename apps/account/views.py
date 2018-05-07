@@ -16,6 +16,8 @@ from .utils import is_adult
 from django.contrib.auth.hashers import make_password
 from post_office import mail
 from .models import ResetPassword
+from datetime import datetime, timedelta
+from django.utils import timezone
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -147,7 +149,7 @@ class AccountViewSet(ExModelViewSet):
                 raise err.ValidationError(*("User does not exist for this given email", 400))
             token = self.random_word(8)
             ResetPassword.objects.create(email=email, user=user, token=token)
-            link = request.get_host() + "/reset_password?code=" + token
+            link = request.get_host() + "/reset_password?token=" + token
             mail.send(
                 email,  # List of email addresses also accepted
                 'anoopmsfreelancer@gmail.com',
@@ -170,7 +172,11 @@ class AccountViewSet(ExModelViewSet):
         :return:
         """
         try:
+            token = request.query_params.get('token', None)
             password = request.data.get('password', None)
+            reset_password = ResetPassword.objects.filter(token=token).first()
+            if timezone.now() - reset_password.created_at > 24:
+                raise err.ValidationError(*("Reset password link is expired", 400))
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))

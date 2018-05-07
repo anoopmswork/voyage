@@ -11,7 +11,7 @@ class UserProfile(ExModel):
     receive_notifications = models.BooleanField(default=False)
 
     def __str__(self):
-        return "%s" % self.user.name
+        return "%s" % self.user.email
 
 
 class ResetPassword(ExModel):
@@ -24,4 +24,4 @@ class ResetPassword(ExModel):
     token = models.CharField(null=False, blank=False,max_length=100)
 
     def __str__(self):
-        return "%s" % self.user.name
+        return "%s" % self.user.email
