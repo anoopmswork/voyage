@@ -161,3 +161,16 @@ class AccountViewSet(ExModelViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+    @action(methods=['POST'], detail=False)
+    def reset_password(self, request):
+        """
+        To reset forget password with new password
+        :param request:
+        :return:
+        """
+        try:
+            password = request.data.get('password', None)
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
