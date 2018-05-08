@@ -175,9 +175,25 @@ class AccountViewSet(ExModelViewSet):
             token = request.query_params.get('token', None)
             password = request.data.get('password', None)
             reset_password = ResetPassword.objects.filter(token=token).first()
-            if reset_password and (timezone.now() - reset_password.created_at).days > 0:
+            if reset_password and (timezone.now() - reset_password.created_at).days > 0 or reset_password.expired:
                 raise err.ValidationError(*("Reset password link is expired", 400))
-            
+            if reset_password.user.password == make_password(password) or not password:
+                raise err.ValidationError(*("New password cant be the old password or empty", 400))
+            params = {
+                'first_name': reset_password.user.first_name,
+                'last_name': reset_password.user.last_name,
+                'email': reset_password.user.email,
+                'password': make_password(password),
+                'username': reset_password.user.username
+            }
+            self.verify_password(**params)
+            reset_password.user.set_password(password)
+            reset_password.user.save()
+            ResetPassword.objects.filter(user=reset_password.user).exclude(pk=reset_password.pk).all().delete()
+            reset_password.expired = True
+            reset_password.save()
+            return Response({"success": True,
+                             "msg": "Password successfully changed"})
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
