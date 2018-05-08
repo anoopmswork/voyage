@@ -175,8 +175,9 @@ class AccountViewSet(ExModelViewSet):
             token = request.query_params.get('token', None)
             password = request.data.get('password', None)
             reset_password = ResetPassword.objects.filter(token=token).first()
-            if timezone.now() - reset_password.created_at > 24:
+            if reset_password and (timezone.now() - reset_password.created_at).days > 0:
                 raise err.ValidationError(*("Reset password link is expired", 400))
+            
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
