@@ -212,7 +212,14 @@ class UserViewSet(ExModelViewSet):
         :return:
         """
         try:
-            pass
+            new_password = request.data.get('new_password', None)
+            if not new_password:
+                raise err.ValidationError(*("New password is not entered", 400))
+            if check_password(new_password, request.user.password):
+                request.user.set_password(new_password)
+                request.user.save()
+                return Response({"success": True,
+                             "msg": "Password successfully changed"})
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
