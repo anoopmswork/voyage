@@ -13,7 +13,7 @@ from rest_framework import status, viewsets
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
 from .utils import is_adult
-from django.contrib.auth.hashers import make_password,check_password
+from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
 from .models import ResetPassword
 from datetime import datetime, timedelta
@@ -177,7 +177,7 @@ class AccountViewSet(ExModelViewSet):
             reset_password = ResetPassword.objects.filter(token=token).first()
             if reset_password and (timezone.now() - reset_password.created_at).days > 0 or reset_password.expired:
                 raise err.ValidationError(*("Reset password link is expired", 400))
-            if check_password(password,reset_password.user.password) or not password:
+            if check_password(password, reset_password.user.password) or not password:
                 raise err.ValidationError(*("New password cant be the old password or empty", 400))
             params = {
                 'first_name': reset_password.user.first_name,
@@ -194,6 +194,25 @@ class AccountViewSet(ExModelViewSet):
             reset_password.save()
             return Response({"success": True,
                              "msg": "Password successfully changed"})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+
+class UserViewSet(ExModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    retrieve_serializer_class = UserSerializer
+
+    @action(methods=['POST'], detail=False)
+    def change_password(self, request):
+        """
+        To change password of an existing user
+        :param request:
+        :return:
+        """
+        try:
+            pass
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
