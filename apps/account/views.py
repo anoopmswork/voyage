@@ -213,13 +213,16 @@ class UserViewSet(ExModelViewSet):
         """
         try:
             new_password = request.data.get('new_password', None)
-            if not new_password:
-                raise err.ValidationError(*("New password is not entered", 400))
-            if check_password(new_password, request.user.password):
+            old_password = request.data.get('old_password', None)
+            if not new_password or not old_password:
+                raise err.ValidationError(*("Password details are not entered", 400))
+            if check_password(old_password, request.user.password):
                 request.user.set_password(new_password)
                 request.user.save()
                 return Response({"success": True,
-                             "msg": "Password successfully changed"})
+                                 "msg": "Password successfully changed"})
+            else:
+                raise err.ValidationError(*("Current password is false", 400))
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
