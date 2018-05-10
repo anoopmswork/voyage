@@ -21,7 +21,19 @@ class ResetPassword(ExModel):
     email = models.EmailField(null=False, blank=False)
     user = models.ForeignKey(User, related_name='reset_password', on_delete=models.CASCADE)
     expired = models.BooleanField(default=False)
-    token = models.CharField(null=False, blank=False,max_length=100)
+    token = models.CharField(null=False, blank=False, max_length=100)
 
     def __str__(self):
         return "%s" % self.user.email
+
+
+class AuditEntry(ExModel):
+    """
+    Model class for storing login details
+    """
+    action = models.CharField(max_length=64)
+    ip = models.GenericIPAddressField(null=True)
+    username = models.CharField(max_length=256, null=True)
+
+    def __str__(self):
+        return '{0} - {1} - {2}'.format(self.action, self.username, self.ip)
