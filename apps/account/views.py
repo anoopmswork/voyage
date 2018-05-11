@@ -18,7 +18,7 @@ from post_office import mail
 from .models import ResetPassword
 from datetime import datetime, timedelta
 from django.utils import timezone
-from .signals import user_logged_in,user_logged_out,\
+from .signals import user_logged_in, user_logged_out, \
     user_login_failed
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -128,7 +128,7 @@ class AccountViewSet(ExModelViewSet):
                     "status": "success",
                 })
             else:
-                user_login_failed.send(None,request=request,credentials={'username':username})
+                user_login_failed.send(None, request=request, credentials={'username': username})
                 return Response({
                     "status": "failure",
                     "msg": "Invalid parameters"
@@ -227,6 +227,20 @@ class UserViewSet(ExModelViewSet):
                                  "msg": "Password successfully changed"})
             else:
                 raise err.ValidationError(*("Current password is false", 400))
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['POST'], detail=False)
+    def logout(self, request):
+        """
+        To change password of an existing user
+        :param request:
+        :return:
+        """
+        try:
+            request.user.auth_token.delete()
+            return Response(status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
