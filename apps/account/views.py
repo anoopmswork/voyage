@@ -18,6 +18,8 @@ from post_office import mail
 from .models import ResetPassword
 from datetime import datetime, timedelta
 from django.utils import timezone
+from .signals import user_logged_in,user_logged_out,\
+    user_login_failed
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -120,11 +122,13 @@ class AccountViewSet(ExModelViewSet):
             if user is not None:
                 payload = jwt_payload_handler(user)
                 token = jwt_encode_handler(payload)
+                user_logged_in.send(sender=User, request=request, user=user)
                 return Response({
                     "token": token,
                     "status": "success",
                 })
             else:
+                user_login_failed.send(None,request=request,credentials={'username':username})
                 return Response({
                     "status": "failure",
                     "msg": "Invalid parameters"

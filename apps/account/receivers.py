@@ -57,7 +57,7 @@ def user_logged_out_callback(sender, request, user, **kwargs):
 
 
 @receiver(user_login_failed)
-def user_login_failed_callback(sender, credentials, **kwargs):
+def user_login_failed_callback(request, credentials, **kwargs):
     """
     Track user logged out details
     :param sender:
@@ -66,7 +66,9 @@ def user_login_failed_callback(sender, credentials, **kwargs):
     :return:
     """
     try:
-        AuditEntry.objects.create(action='user_login_failed', username=credentials.get('username', None))
+        ip = request.META.get('REMOTE_ADDR')
+        AuditEntry.objects.create(action='user_login_failed', ip=ip,
+                                  username=credentials.get('username', None))
     except Exception as e:
         logger.error(e)
         raise err.ValidationError(*(e, 400))
