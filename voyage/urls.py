@@ -18,6 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import refresh_jwt_token
 
 schema_view = get_swagger_view(title='Pastebin API')
 
@@ -33,4 +34,5 @@ urlpatterns = localapp_urlpatterns + [
     url(r'^admin/', admin.site.urls),
     url('grappelli/', include('grappelli.urls')),
     url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token),
 ]

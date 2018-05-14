@@ -1,6 +1,7 @@
 import logging
 import string
 import random
+import requests
 
 from core.viewsets import ExModelViewSet
 from rest_framework.response import Response
@@ -20,6 +21,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
     user_login_failed
+from django.contrib.auth import logout
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -235,11 +237,19 @@ class UserViewSet(ExModelViewSet):
     def logout(self, request):
         """
         To change password of an existing user
-        :param request:
+        :param reques
         :return:
         """
         try:
-            request.user.auth_token.delete()
+            url = "http://" + request.get_host() + "/api-token-refresh/"
+            post_data = {
+                'token': request.auth.decode("utf-8")
+            }
+            headers = {
+                'Content-Type': 'application/json'
+            }
+            result = requests.post(url=url, headers=headers, data=post_data)
+            logout(request)
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(e)
