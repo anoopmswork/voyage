@@ -2,6 +2,7 @@ import logging
 import string
 import random
 import requests
+import json
 
 from core.viewsets import ExModelViewSet
 from rest_framework.response import Response
@@ -16,12 +17,13 @@ from .serializers import UserSerializer
 from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
-from .models import ResetPassword
+from .models import ResetPassword, AuditEntry
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.contrib.auth import logout
+from .serializers import AuditEntrySerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -241,16 +243,33 @@ class UserViewSet(ExModelViewSet):
         :return:
         """
         try:
+            # TODO
             url = "http://" + request.get_host() + "/api-token-refresh/"
             post_data = {
-                'token': request.auth.decode("utf-8")
+                "token": request.auth.decode("utf-8")
             }
             headers = {
                 'Content-Type': 'application/json'
             }
             result = requests.post(url=url, headers=headers, data=post_data)
+            user_logged_out.send(sender=User, request=request, user=request.user)
             logout(request)
             return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['GET'], detail=False)
+    def attempts(self, request):
+        """
+        To list audit login details for a user
+        :param request:
+        :return:
+        """
+        try:
+            audit_entries = AuditEntry.objects.filter(username=request.user.username).order_by('-created_at')[:5]
+            serialized_data = AuditEntrySerializer(audit_entries, many=True).data
+            return Response({"data": serialized_data})
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
