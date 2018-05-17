@@ -13,6 +13,12 @@ class UserProfile(ExModel):
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     receive_notifications = models.BooleanField(default=False)
     gender = models.CharField('Gender', max_length=20, default='male', choices=GENDER)
+    native_location = models.TextField(null=False, blank=False)
+    bio = models.TextField(null=True, blank=True)
+    School = models.TextField(null=True, blank=True)
+    Work = models.TextField(null=True, blank=True)
+    emergency_contact = models.CharField(max_length=20, null=True, blank=True)
+    work_email = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return "%s" % self.user.email
