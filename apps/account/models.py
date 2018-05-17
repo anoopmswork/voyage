@@ -1,14 +1,18 @@
 from django.contrib.auth.models import User
 from core.models import ExModel
 from django.db import models
+from core import helper
+from .constants import Gender
 
 
 class UserProfile(ExModel):
     """
     Model class for user profile details
     """
+    GENDER = helper.prop2pair(Gender)
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     receive_notifications = models.BooleanField(default=False)
+    gender = models.CharField('Gender', max_length=20, default='male', choices=GENDER)
 
     def __str__(self):
         return "%s" % self.user.email
