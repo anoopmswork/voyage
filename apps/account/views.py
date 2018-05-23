@@ -17,7 +17,7 @@ from .serializers import UserSerializer
 from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
-from .models import ResetPassword, AuditEntry
+from .models import ResetPassword, AuditEntry,UserProfile
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
@@ -273,3 +273,7 @@ class UserViewSet(ExModelViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+class UserProfileViewSet(ExModelViewSet):
+    queryset = UserProfile.objects.all()
+

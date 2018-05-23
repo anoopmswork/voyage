@@ -5,5 +5,6 @@ router = routers.SimpleRouter(trailing_slash=False)
 
 router.register(r'api/account', views.AccountViewSet, base_name='account')
 router.register(r'api/user', views.UserViewSet, base_name='user')
+router.register(r'api/user_profile', views.UserProfileViewSet, base_name='user_profile')
 
 urlpatterns = router.urls

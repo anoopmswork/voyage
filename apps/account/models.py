@@ -13,12 +13,21 @@ class UserProfile(ExModel):
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     receive_notifications = models.BooleanField(default=False)
     gender = models.CharField('Gender', max_length=20, default='male', choices=GENDER)
-    native_location = models.TextField(null=False, blank=False)
+    native_location = models.TextField(default='Delhi',null=False, blank=False)
     bio = models.TextField(null=True, blank=True)
     School = models.TextField(null=True, blank=True)
     Work = models.TextField(null=True, blank=True)
     emergency_contact = models.CharField(max_length=20, null=True, blank=True)
     work_email = models.CharField(max_length=100, null=True, blank=True)
+    dob = models.CharField('DOB', max_length=20, null=True, blank=True)
+    preferred_language = models.CharField('Language', max_length=100, default='English')
+    preferred_currency = models.CharField('Currency', max_length=100, default='Indian rupee')
+    time_zone = models.CharField('Time Zone', max_length=100, default='(UTC +5:30)')
+    languages = models.TextField(null=True, blank=True)
+    vat_number = models.CharField(max_length=100, null=True, blank=True)
+    emergency_contact = models.TextField(null=True, blank=True)
+    shipping_address = models.TextField(null=True, blank=True)
+    guest_profiles = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "%s" % self.user.email
