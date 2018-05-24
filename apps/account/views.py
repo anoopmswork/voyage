@@ -13,17 +13,17 @@ from rest_framework_jwt.settings import api_settings
 from core import errors as err
 from rest_framework import status, viewsets
 from django.contrib.auth.models import User
-from .serializers import UserSerializer
 from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
-from .models import ResetPassword, AuditEntry,UserProfile
+from .models import ResetPassword, AuditEntry, UserProfile
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.contrib.auth import logout
-from .serializers import AuditEntrySerializer
+from .serializers import AuditEntrySerializer,\
+    UserProfileSerializer,UserSerializer,UserProfileCreateSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -274,6 +274,8 @@ class UserViewSet(ExModelViewSet):
             logger.error(e)
             raise err.ValidationError(*(e, 400))
 
+
 class UserProfileViewSet(ExModelViewSet):
     queryset = UserProfile.objects.all()
-
+    serializer_class = UserProfileSerializer
+    create_serializer_class=UserProfileCreateSerializer
