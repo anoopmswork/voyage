@@ -29,13 +29,14 @@ class UserProfileSerializer(ExModelSerializer):
 class UserProfileCreateSerializer(ExModelSerializer):
     class Meta:
         model = UserProfile
-        exclude = ()
+        exclude = ('user',)
 
     def validate(self, attrs):
         return attrs
 
     def create(self, validated_data):
         try:
+            validated_data['user']=self.context['request'].user.pk
             userprofile_serializer = UserProfileSerializer(data=validated_data)
             if userprofile_serializer.is_valid(raise_exception=True):
                 userprofile = userprofile_serializer.save()

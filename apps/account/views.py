@@ -279,3 +279,4 @@ class UserProfileViewSet(ExModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     create_serializer_class=UserProfileCreateSerializer
+
