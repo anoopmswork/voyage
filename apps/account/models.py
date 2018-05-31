@@ -10,7 +10,7 @@ class UserProfile(ExModel):
     Model class for user profile details
     """
     GENDER = helper.prop2pair(Gender)
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     receive_notifications = models.BooleanField(default=False)
     gender = models.CharField('Gender', max_length=20, default='male', choices=GENDER)
     native_location = models.TextField(default='Delhi',null=False, blank=False)

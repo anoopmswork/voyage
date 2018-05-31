@@ -36,8 +36,20 @@ class UserProfileCreateSerializer(ExModelSerializer):
 
     def create(self, validated_data):
         try:
-            validated_data['user']=self.context['request'].user.pk
+            validated_data['user'] = self.context['request'].user.pk
             userprofile_serializer = UserProfileSerializer(data=validated_data)
+            if userprofile_serializer.is_valid(raise_exception=True):
+                userprofile = userprofile_serializer.save()
+            return userprofile
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    def update(self, instance, validated_data):
+        try:
+            validated_data['user'] = self.context['request'].user.pk
+            userprofile_serializer = UserProfileSerializer(instance,
+                                                           data=validated_data, partial=True)
             if userprofile_serializer.is_valid(raise_exception=True):
                 userprofile = userprofile_serializer.save()
             return userprofile

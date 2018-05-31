@@ -22,8 +22,8 @@ from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.contrib.auth import logout
-from .serializers import AuditEntrySerializer,\
-    UserProfileSerializer,UserSerializer,UserProfileCreateSerializer
+from .serializers import AuditEntrySerializer, \
+    UserProfileSerializer, UserSerializer, UserProfileCreateSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -278,5 +278,14 @@ class UserViewSet(ExModelViewSet):
 class UserProfileViewSet(ExModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    create_serializer_class=UserProfileCreateSerializer
+    create_serializer_class = UserProfileCreateSerializer
+    update_serializer_class = UserProfileCreateSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete(force=True)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
