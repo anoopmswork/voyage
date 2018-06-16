@@ -289,3 +289,19 @@ class UserProfileViewSet(ExModelViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+
+class GeoViewSet(viewsets.ViewSet):
+    """
+    A simple viewset for listing geo,language,currencies etc
+    """
+
+    @action(methods=['GET'], detail=False)
+    def currencies(self, request):
+        try:
+            url = 'https://openexchangerates.org/api/currencies.json'
+            result = requests.get(url=url)
+            return Response({"data": json.loads(result.text)})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
