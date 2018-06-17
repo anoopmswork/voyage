@@ -305,3 +305,13 @@ class GeoViewSet(viewsets.ViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+    @action(methods=['GET'], detail=False)
+    def languages(self, request):
+        try:
+            url = 'https://pkgstore.datahub.io/core/language-codes/language-codes_json/data/734c5eea7e10548144a18241e8f931f8/language-codes_json.json'
+            result = requests.get(url=url)
+            return Response({"data": json.loads(result.text)})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
