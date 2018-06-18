@@ -315,3 +315,13 @@ class GeoViewSet(viewsets.ViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+    @action(methods=['GET'], detail=False)
+    def phone_codes(self, request):
+        try:
+            url = 'https://gist.githubusercontent.com/Goles/3196253/raw/9ca4e7e62ea5ad935bb3580dc0a07d9df033b451/CountryCodes.json'
+            result = requests.get(url=url)
+            return Response({"data": json.loads(result.text)})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
