@@ -1,8 +1,9 @@
 import logging
 from core.serializers import ExModelSerializer
 from django.contrib.auth.models import User
-from .models import AuditEntry, UserProfile
+from .models import AuditEntry, UserProfile, Languages
 from core import errors as err
+
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -56,3 +57,9 @@ class UserProfileCreateSerializer(ExModelSerializer):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+
+class LanguagesSerializer(ExModelSerializer):
+    class Meta:
+        model = Languages
+        exclude = ()

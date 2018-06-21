@@ -76,3 +76,11 @@ class Languages(ExModel):
 
     def __str__(self):
         return self.name
+
+
+class UserLanguages(ExModel):
+    """
+    Model class for storing user language details
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    language = models.ForeignKey(Languages, on_delete=models.CASCADE)

@@ -17,14 +17,16 @@ from django.contrib.auth.models import User
 from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
-from .models import ResetPassword, AuditEntry, UserProfile
+from .models import ResetPassword, AuditEntry, \
+    UserProfile, Languages
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
     user_login_failed
 from django.contrib.auth import logout
 from .serializers import AuditEntrySerializer, \
-    UserProfileSerializer, UserSerializer, UserProfileCreateSerializer
+    UserProfileSerializer, UserSerializer, \
+    UserProfileCreateSerializer, LanguagesSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -310,9 +312,8 @@ class GeoViewSet(viewsets.ViewSet):
     @action(methods=['GET'], detail=False)
     def languages(self, request):
         try:
-            url = 'https://pkgstore.datahub.io/core/language-codes/language-codes_json/data/734c5eea7e10548144a18241e8f931f8/language-codes_json.json'
-            result = requests.get(url=url)
-            return Response({"data": json.loads(result.text)})
+            languages = Languages.objects.all()
+            return Response({"data": LanguagesSerializer(languages, many=True).data})
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
@@ -335,3 +336,5 @@ class GeoViewSet(viewsets.ViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+    
