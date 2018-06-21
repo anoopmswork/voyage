@@ -18,7 +18,7 @@ from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
 from .models import ResetPassword, AuditEntry, \
-    UserProfile, Languages
+    UserProfile, Languages, UserLanguages
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
@@ -26,7 +26,8 @@ from .signals import user_logged_in, user_logged_out, \
 from django.contrib.auth import logout
 from .serializers import AuditEntrySerializer, \
     UserProfileSerializer, UserSerializer, \
-    UserProfileCreateSerializer, LanguagesSerializer
+    UserProfileCreateSerializer, LanguagesSerializer, \
+    UserLanguagesSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -337,4 +338,32 @@ class GeoViewSet(viewsets.ViewSet):
             logger.error(e)
             raise err.ValidationError(*(e, 400))
 
-    
+    @action(methods=['POST'], detail=False)
+    def add_user_language(self, request):
+        try:
+            user = request.user
+            language = Languages.objects.filter(pk=request.data.get('language', None)).first()
+            user_language = UserLanguages.objects.create(user=user, language=language)
+            return Response({"data": UserLanguagesSerializer(user_language).data})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['GET'], detail=False)
+    def list_user_languages(self, request):
+        try:
+            user_languages = UserLanguages.objects.filter(user=request.user).all()
+            return Response({"data": UserLanguagesSerializer(user_languages, many=True).data})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+    @action(methods=['POST'], detail=False)
+    def delete_user_language(self, request):
+        try:
+            user_language_id = request.data.get('user_language_id', None)
+            UserLanguages.objects.filter(pk=user_language_id).first().delete(force=True)
+            return Response({"data": "Success"})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))

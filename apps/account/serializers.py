@@ -1,7 +1,8 @@
 import logging
 from core.serializers import ExModelSerializer
 from django.contrib.auth.models import User
-from .models import AuditEntry, UserProfile, Languages
+from .models import AuditEntry, UserProfile, Languages, \
+    UserLanguages
 from core import errors as err
 
 
@@ -62,4 +63,10 @@ class UserProfileCreateSerializer(ExModelSerializer):
 class LanguagesSerializer(ExModelSerializer):
     class Meta:
         model = Languages
+        exclude = ()
+
+
+class UserLanguagesSerializer(ExModelSerializer):
+    class Meta:
+        model = UserLanguages
         exclude = ()
