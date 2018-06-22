@@ -18,7 +18,7 @@ from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
 from .models import ResetPassword, AuditEntry, \
-    UserProfile, Languages, UserLanguages
+    UserProfile, Languages, UserLanguages, VatVerification
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
@@ -27,7 +27,8 @@ from django.contrib.auth import logout
 from .serializers import AuditEntrySerializer, \
     UserProfileSerializer, UserSerializer, \
     UserProfileCreateSerializer, LanguagesSerializer, \
-    UserLanguagesSerializer
+    UserLanguagesSerializer, VatVerificationSerializer,\
+    VatVerificationCreateSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -367,3 +368,22 @@ class GeoViewSet(viewsets.ViewSet):
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))
+
+    @action(methods=['GET'], detail=False)
+    def countries(self, request):
+        try:
+            url = 'http://country.io/names.json'
+            result = requests.get(url=url)
+            return Response({"data": json.loads(result.text)})
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+
+class VatViewSet(viewsets.ViewSet):
+    """
+    Viewset forshowing userprofile details
+    """
+    queryset = VatVerification.objects.all()
+    serializer_class = VatVerificationSerializer
+    create_serializer_class = VatVerificationCreateSerializer

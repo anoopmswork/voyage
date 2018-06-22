@@ -2,7 +2,7 @@ import logging
 from core.serializers import ExModelSerializer
 from django.contrib.auth.models import User
 from .models import AuditEntry, UserProfile, Languages, \
-    UserLanguages
+    UserLanguages, VatVerification
 from core import errors as err
 
 
@@ -70,3 +70,26 @@ class UserLanguagesSerializer(ExModelSerializer):
     class Meta:
         model = UserLanguages
         exclude = ()
+
+
+class VatVerificationSerializer(ExModelSerializer):
+    class Meta:
+        model = VatVerification
+        exclude = ()
+
+
+class VatVerificationCreateSerializer(ExModelSerializer):
+    class Meta:
+        model = VatVerification
+        exclude = ()
+
+    def create(self, validated_data):
+        try:
+            validated_data['user'] = self.context['request'].user.pk
+            vat_serializer = VatVerificationSerializer(data=validated_data)
+            if vat_serializer.is_valid(raise_exception=True):
+                vat_verification = vat_serializer.save()
+            return vat_verification
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))

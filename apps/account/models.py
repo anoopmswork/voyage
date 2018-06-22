@@ -84,3 +84,18 @@ class UserLanguages(ExModel):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     language = models.ForeignKey(Languages, on_delete=models.CASCADE)
+
+
+class VatVerification(ExModel):
+    """
+    Model class for storing vat verification details
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    member_state = models.CharField(max_length=100)
+    vat_number = models.CharField(max_length=100)
+    registration_name = models.CharField(max_length=100)
+    address1 = models.TextField()
+    address2 = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100)
+    region = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=100)
