@@ -81,7 +81,7 @@ class VatVerificationSerializer(ExModelSerializer):
 class VatVerificationCreateSerializer(ExModelSerializer):
     class Meta:
         model = VatVerification
-        exclude = ()
+        exclude = ('user',)
 
     def create(self, validated_data):
         try:

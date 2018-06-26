@@ -27,7 +27,7 @@ from django.contrib.auth import logout
 from .serializers import AuditEntrySerializer, \
     UserProfileSerializer, UserSerializer, \
     UserProfileCreateSerializer, LanguagesSerializer, \
-    UserLanguagesSerializer, VatVerificationSerializer,\
+    UserLanguagesSerializer, VatVerificationSerializer, \
     VatVerificationCreateSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -380,7 +380,7 @@ class GeoViewSet(viewsets.ViewSet):
             raise err.ValidationError(*(e, 400))
 
 
-class VatViewSet(viewsets.ViewSet):
+class VatViewSet(ExModelViewSet):
     """
     Viewset forshowing userprofile details
     """
