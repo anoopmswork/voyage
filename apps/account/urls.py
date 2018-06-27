@@ -9,5 +9,7 @@ router.register(r'api/user_profile', views.UserProfileViewSet, base_name='user_p
 router.register(r'api/geo', views.GeoViewSet, base_name='geo')
 router.register(r'api/vat', views.VatViewSet, base_name='vat')
 router.register(r'api/emergency', views.EmergencyContactViewSet, base_name='vat')
+router.register(r'api/shipping', views.ShippingContactViewSet, base_name='shipping')
+router.register(r'api/guest_profile', views.GuestProfileViewSet, base_name='guest_profile')
 
 urlpatterns = router.urls

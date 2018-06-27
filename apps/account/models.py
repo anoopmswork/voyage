@@ -121,3 +121,13 @@ class ShippingAddress(ExModel):
     address1 = models.TextField()
     address2 = models.TextField(null=True, blank=True)
     postal_code = models.CharField(max_length=100)
+
+
+class GuestProfile(ExModel):
+    """
+    Model class for storing profile details
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default='')
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    nationality = models.CharField(max_length=100)

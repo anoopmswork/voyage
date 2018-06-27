@@ -2,7 +2,8 @@ import logging
 from core.serializers import ExModelSerializer
 from django.contrib.auth.models import User
 from .models import AuditEntry, UserProfile, Languages, \
-    UserLanguages, VatVerification, EmergencyContact
+    UserLanguages, VatVerification, EmergencyContact, \
+    ShippingAddress, GuestProfile
 from core import errors as err
 
 
@@ -113,6 +114,52 @@ class EmergencyContactCreateSerializer(ExModelSerializer):
             if emergency_contact_serializer.is_valid(raise_exception=True):
                 emergency_contact = emergency_contact_serializer.save()
             return emergency_contact
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+
+class ShippingAddressSerializer(ExModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        exclude = ()
+
+
+class ShippingAddressCreateSerializer(ExModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        exclude = ('user',)
+
+    def create(self, validated_data):
+        try:
+            validated_data['user'] = self.context['request'].user.pk
+            shipping_address_serializer = ShippingAddressSerializer(data=validated_data)
+            if shipping_address_serializer.is_valid(raise_exception=True):
+                shipping_address = shipping_address_serializer.save()
+            return shipping_address
+        except Exception as e:
+            logger.error(e)
+            raise err.ValidationError(*(e, 400))
+
+
+class GuestProfileSerializer(ExModelSerializer):
+    class Meta:
+        model = GuestProfile
+        exclude = ()
+
+
+class GuestProfileCreateSerializer(ExModelSerializer):
+    class Meta:
+        model = GuestProfile
+        exclude = ('user',)
+
+    def create(self, validated_data):
+        try:
+            validated_data['user'] = self.context['request'].user.pk
+            guest_profile_serializer = GuestProfileSerializer(data=validated_data)
+            if guest_profile_serializer.is_valid(raise_exception=True):
+                guest_profile = guest_profile_serializer.save()
+            return guest_profile
         except Exception as e:
             logger.error(e)
             raise err.ValidationError(*(e, 400))

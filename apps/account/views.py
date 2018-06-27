@@ -19,7 +19,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
 from .models import ResetPassword, AuditEntry, \
     UserProfile, Languages, UserLanguages, VatVerification, \
-    EmergencyContact
+    EmergencyContact, ShippingAddress, GuestProfile
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
@@ -31,6 +31,7 @@ from .serializers import AuditEntrySerializer, \
     UserLanguagesSerializer, VatVerificationSerializer, \
     VatVerificationCreateSerializer, EmergencyContactSerializer, \
     EmergencyContactCreateSerializer
+from . import serializers
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -393,8 +394,26 @@ class VatViewSet(ExModelViewSet):
 
 class EmergencyContactViewSet(ExModelViewSet):
     """
-    Viewset forshowing userprofile details
+    Viewset for showing userprofile details
     """
     queryset = EmergencyContact.objects.all()
     serializer_class = EmergencyContactSerializer
     create_serializer_class = EmergencyContactCreateSerializer
+
+
+class ShippingContactViewSet(ExModelViewSet):
+    """
+    Viewset for showing shipping contact details
+    """
+    queryset = ShippingAddress.objects.all()
+    serializer_class = serializers.ShippingAddressSerializer
+    create_serializer_class = serializers.ShippingAddressCreateSerializer
+
+
+class GuestProfileViewSet(ExModelViewSet):
+    """
+    Viewset for showing guest profile details
+    """
+    queryset = GuestProfile.objects.all()
+    serializer_class = serializers.GuestProfileSerializer
+    create_serializer_class = serializers.GuestProfileCreateSerializer
