@@ -99,3 +99,25 @@ class VatVerification(ExModel):
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
     postal_code = models.CharField(max_length=100)
+
+
+class EmergencyContact(ExModel):
+    """
+    Model class for storing emergency contact details
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=100)
+    email = models.CharField(max_length=100)
+    relationship = models.CharField(max_length=100)
+
+
+class ShippingAddress(ExModel):
+    """
+    Model class for storing emergency contact details
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    country = models.CharField(max_length=100)
+    address1 = models.TextField()
+    address2 = models.TextField(null=True, blank=True)
+    postal_code = models.CharField(max_length=100)

@@ -18,7 +18,8 @@ from .utils import is_adult
 from django.contrib.auth.hashers import make_password, check_password
 from post_office import mail
 from .models import ResetPassword, AuditEntry, \
-    UserProfile, Languages, UserLanguages, VatVerification
+    UserProfile, Languages, UserLanguages, VatVerification, \
+    EmergencyContact
 from datetime import datetime, timedelta
 from django.utils import timezone
 from .signals import user_logged_in, user_logged_out, \
@@ -28,7 +29,8 @@ from .serializers import AuditEntrySerializer, \
     UserProfileSerializer, UserSerializer, \
     UserProfileCreateSerializer, LanguagesSerializer, \
     UserLanguagesSerializer, VatVerificationSerializer, \
-    VatVerificationCreateSerializer
+    VatVerificationCreateSerializer, EmergencyContactSerializer, \
+    EmergencyContactCreateSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -387,3 +389,12 @@ class VatViewSet(ExModelViewSet):
     queryset = VatVerification.objects.all()
     serializer_class = VatVerificationSerializer
     create_serializer_class = VatVerificationCreateSerializer
+
+
+class EmergencyContactViewSet(ExModelViewSet):
+    """
+    Viewset forshowing userprofile details
+    """
+    queryset = EmergencyContact.objects.all()
+    serializer_class = EmergencyContactSerializer
+    create_serializer_class = EmergencyContactCreateSerializer
