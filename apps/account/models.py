@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from core.models import ExModel
 from django.db import models
 from core import helper
-from .constants import Gender
+from .constants import Gender, NotificationTypes
 
 
 class UserProfile(ExModel):
@@ -131,3 +131,35 @@ class GuestProfile(ExModel):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     nationality = models.CharField(max_length=100)
+
+
+class Reviews(ExModel):
+    """
+    Model class for storing review details
+    """
+    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='host_reviews')
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviewer_reviews')
+    review_content = models.TextField()
+    abuse_comment = models.BooleanField(default=False)
+
+
+class Reference(ExModel):
+    """
+    Model class for storing review details
+    """
+    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='host_references')
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviewer_references')
+    reference_content = models.TextField()
+    host_approval = models.BooleanField(default=False)
+
+
+class Notification(ExModel):
+    """
+    Model class for storing notification details
+    """
+    NotificationTypes = helper.prop2pair(NotificationTypes)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField('NotificationType', max_length=20, choices=NotificationTypes)
+    email = models.BooleanField(default=True)
+    push_notifications = models.BooleanField(default=True)
+    text_messages = models.BooleanField(default=True)
