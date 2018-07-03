@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from core import errors as err
-from .models import UserProfile, AuditEntry
+from .models import UserProfile, AuditEntry, \
+    Notification
+from core import helper
 from .signals import *
 
 # Get an instance of a logger
@@ -15,6 +17,10 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     try:
         if created:
             UserProfile.objects.create(user=instance)
+            from .constants import NotificationTypes
+            NotificationTypes = helper.prop2pair(NotificationTypes)
+            for k, v in NotificationTypes:
+                Notification.objects.create(user=instance, notification_type=k)
     except Exception as e:
         logger.error(e)
         raise err.ValidationError(*(e, 400))
