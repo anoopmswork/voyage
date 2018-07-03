@@ -299,6 +299,7 @@ class UserProfileViewSet(ExModelViewSet):
             raise err.ValidationError(*(e, 400))
 
 
+
 class GeoViewSet(viewsets.ViewSet):
     """
     A simple viewset for listing geo,language,currencies etc
